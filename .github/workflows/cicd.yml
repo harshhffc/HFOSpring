@@ -27,21 +27,26 @@ jobs:
             if [[ "$key" && ! "$key" =~ ^# ]]; then
               # Convert property name to a valid shell variable name
               # Replace dots with underscores and convert to uppercase
-              export_key=$(echo "$key" | tr . _ | tr '[:lower:]' '[:upper:]' | sed 's/-/_/')
+              export_key=$(echo "$key" | tr . _ | tr '[:lower:]' '[:upper:]')
               export "$export_key"="$value"
             fi
           done < src/main/resources/application-harshit.properties
 
-      - name: Print loaded environment variables
+      - name: Debug Output
         run: |
+          echo "Debugging environment variables..."
           echo "Spring Datasource URL: $SPRING_DATASOURCE_URL"
           echo "Spring Datasource Username: $SPRING_DATASOURCE_USERNAME"
           echo "Spring Datasource Password: $SPRING_DATASOURCE_PASSWORD"
+          echo "Server Port: $SERVER_PORT"
+          echo "Is Salesforce Live: $APPLICATION_FLAGS_ISSALESFORCELIVE"
+          echo "File Paths: $APPLICATION_PATH_FILES"
+          echo "HFO Base URL: $APPLICATION_KEY_HFOBASEURL"
 
-      - name: Build the application with debug logs
+      - name: Build the application
         run: |
           ./gradlew clean
-          ./gradlew --no-daemon build --debug
+          ./gradlew --no-daemon build
 
       - name: Get current date and time in IST
         id: vars
