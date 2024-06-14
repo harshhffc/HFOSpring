@@ -27,7 +27,7 @@ jobs:
             if [[ "$key" && ! "$key" =~ ^# ]]; then
               # Convert property name to a valid shell variable name
               # Replace dots with underscores and convert to uppercase
-              export_key=$(echo "$key" | tr . _ | tr '[:lower:]' '[:upper:]')
+              export_key=$(echo "$key" | tr . _ | tr '[:lower:]' '[:upper:]' | sed 's/-/_/')
               export "$export_key"="$value"
             fi
           done < src/main/resources/application-harshit.properties
