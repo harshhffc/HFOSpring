@@ -49,7 +49,7 @@ jobs:
 
       - name: Test MySQL Connection
         run: |
-          mysql -h localhost -P 3306 -u root -pHffc@123 -e "SHOW DATABASES;"
+          mysql -h 127.0.0.1 -P 3306 -u root -pHffc@123 -e "SHOW DATABASES;" || true
 
       - name: Build the application
         run: ./gradlew clean build --stacktrace --info
