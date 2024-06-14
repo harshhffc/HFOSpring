@@ -23,7 +23,11 @@ jobs:
       - name: Load environment variables from properties file
         id: load-env-vars
         run: |
-          export $(grep -v '^#' src/main/resources/application-harshit.properties | xargs)
+          while IFS='=' read -r key value; do
+            if [[ "$key" && ! "$key" =~ ^# ]]; then
+              export "$key"="$value"
+            fi
+          done < src/main/resources/application-harshit.properties
 
       - name: Build the application
         run: |
