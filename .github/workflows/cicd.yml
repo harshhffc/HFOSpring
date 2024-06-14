@@ -44,10 +44,14 @@ jobs:
           echo "File Paths: $APPLICATION_PATH_FILES"
           echo "HFO Base URL: $APPLICATION_KEY_HFOBASEURL"
 
+      - name: Set executable permission for Gradle wrapper
+        run: chmod +x gradlew
+
       - name: Build the application
-        run: |
-          ./gradlew clean
-          ./gradlew --no-daemon build
+        run: ./gradlew clean build --no-daemon
+
+      - name: Run tests
+        run: ./gradlew test --stacktrace
 
       - name: Get current date and time in IST
         id: vars
