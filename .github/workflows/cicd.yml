@@ -23,22 +23,17 @@ jobs:
       - name: Load environment variables from properties file
         id: load-env-vars
         run: |
-          cat src/main/resources/application-harshit.properties  # Print file contents for debugging
           while IFS='=' read -r key value; do
             if [[ "$key" && ! "$key" =~ ^# ]]; then
               # Convert property name to a valid shell variable name
               # Replace dots with underscores and convert to uppercase
               export_key=$(echo "$key" | tr . _ | tr '[:lower:]' '[:upper:]')
               export "$export_key"="$value"
-              echo "Exported $export_key=$value"  # Debugging: Print exported variables
+              echo "Exported $export_key=$value"
             fi
           done < src/main/resources/application-harshit.properties
 
-      - name: Check file permissions and content
-        run: |
-          ls -l src/main/resources/
-
-      - name: Debug Output
+      - name: Debug environment variables
         run: |
           echo "Debugging environment variables..."
           echo "Spring Datasource URL: $SPRING_DATASOURCE_URL"
