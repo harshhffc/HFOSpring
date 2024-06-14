@@ -33,10 +33,16 @@ jobs:
             fi
           done < src/main/resources/application-harshit.properties
 
-      - name: Build the application
+      - name: Print loaded environment variables
+        run: |
+          echo "Spring Datasource URL: $SPRING_DATASOURCE_URL"
+          echo "Spring Datasource Username: $SPRING_DATASOURCE_USERNAME"
+          echo "Spring Datasource Password: $SPRING_DATASOURCE_PASSWORD"
+
+      - name: Build the application with debug logs
         run: |
           ./gradlew clean
-          ./gradlew --no-daemon build
+          ./gradlew --no-daemon build --debug
 
       - name: Get current date and time in IST
         id: vars
