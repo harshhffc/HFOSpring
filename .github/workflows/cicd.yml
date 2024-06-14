@@ -32,6 +32,11 @@ jobs:
             fi
           done < src/main/resources/application-harshit.properties
 
+      - name: Check file permissions and content
+        run: |
+          ls -l src/main/resources/
+          cat src/main/resources/application-harshit.properties
+
       - name: Debug Output
         run: |
           echo "Debugging environment variables..."
