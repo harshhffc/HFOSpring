@@ -1,3 +1,4 @@
+import org.springframework.boot.gradle.tasks.bundling.BootWar
 
 plugins {
 	id("org.springframework.boot") version "2.7.4"
@@ -41,6 +42,9 @@ dependencies {
 	implementation("com.itextpdf:kernel:7.2.3")
 	implementation("com.itextpdf:layout:7.2.3")
 
+	testImplementation("com.h2database:h2") //TODO: check this later
+
+
 }
 
 //tasks.withType<KotlinCompile> {
@@ -52,4 +56,9 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.withType<BootWar> {
+	enabled = true
+	archiveFileName.set("HomefirstOneSpring-0.0.1-SNAPSHOT.war")
 }
