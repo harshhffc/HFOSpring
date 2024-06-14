@@ -26,8 +26,7 @@ jobs:
           while IFS='=' read -r key value; do
             if [[ "$key" && ! "$key" =~ ^# ]]; then
               # Convert property name to a valid shell variable name
-              # Remove dots and replace with underscores
-              # Convert to uppercase for consistency (optional)
+              # Replace dots with underscores and convert to uppercase
               export_key=$(echo "$key" | tr . _ | tr '[:lower:]' '[:upper:]')
               export "$export_key"="$value"
             fi
