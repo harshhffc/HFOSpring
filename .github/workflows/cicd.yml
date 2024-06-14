@@ -41,10 +41,10 @@ jobs:
       - name: Debug Output
         run: |
           echo "Debugging environment variables..."
-          echo "Spring Datasource URL:" ${{ SPRING_DATASOURCE_URL }}
-          echo "Spring Datasource Username:" ${{ SPRING_DATASOURCE_USERNAME }}
-          echo "Spring Datasource Password:" ${{ SPRING_DATASOURCE_PASSWORD }}
-          echo "Server Port:" ${{ SERVER_PORT }}
+          echo "Spring Datasource URL: $SPRING_DATASOURCE_URL"
+          echo "Spring Datasource Username: $SPRING_DATASOURCE_USERNAME"
+          echo "Spring Datasource Password: $SPRING_DATASOURCE_PASSWORD"
+          echo "Server Port: $SERVER_PORT"
           echo "Is Salesforce Live: $APPLICATION_FLAGS_ISSALESFORCELIVE"
           echo "File Paths: $APPLICATION_PATH_FILES"
           echo "HFO Base URL: $APPLICATION_KEY_HFOBASEURL"
