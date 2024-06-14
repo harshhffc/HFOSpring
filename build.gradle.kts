@@ -65,6 +65,3 @@ tasks.withType<BootWar> {
 	archiveFileName.set("HomefirstOneSpring-0.0.1-SNAPSHOT.war")
 }
 
-tasks.withType<BootRun> {
-	systemProperty("spring.profiles.active", System.getProperty("spring.profiles.active"))
-}
