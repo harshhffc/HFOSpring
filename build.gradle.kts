@@ -1,4 +1,5 @@
 import org.springframework.boot.gradle.tasks.bundling.BootWar
+import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
 	id("org.springframework.boot") version "2.7.4"
@@ -43,6 +44,7 @@ dependencies {
 	implementation("com.itextpdf:layout:7.2.3")
 
 	testImplementation("com.h2database:h2") //TODO: check this later
+	implementation("mysql:mysql-connector-java")
 
 
 }
@@ -61,4 +63,8 @@ tasks.withType<Test> {
 tasks.withType<BootWar> {
 	enabled = true
 	archiveFileName.set("HomefirstOneSpring-0.0.1-SNAPSHOT.war")
+}
+
+tasks.withType<BootRun> {
+	systemProperty("spring.profiles.active", System.getProperty("spring.profiles.active"))
 }
