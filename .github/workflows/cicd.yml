@@ -18,14 +18,14 @@ jobs:
       - name: Setup JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: "corretto"
+          distribution: "temurin"
           java-version: 17
 
-      # Step 4: Build the application
-      - name: Build the application
+      - name: Build with Gradle
         run: |
-          ./gradlew clean
-          ./gradlew --no-daemon build
+          ./gradlew clean build
+          mkdir artifacts && cp build/libs/*.jar artifacts
+          cd artifacts && ls
 
       # Step 5: Get current date and time in IST
       - name: Get current date and time in IST
