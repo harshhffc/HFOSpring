@@ -8,6 +8,7 @@ class HomefirstOneSpringApplicationTests {
 
 	@Test
 	fun contextLoads() {
+		println("context is loading")
 	}
 
 }
