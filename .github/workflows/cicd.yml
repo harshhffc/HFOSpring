@@ -30,8 +30,10 @@ jobs:
 
       # Step 4: Create Database
       - name: Create MySQL Database
+        env:
+          MYSQL_PWD: Hffc@123
         run: |
-          sudo mysql -uroot -pHffc@123 -e "CREATE DATABASE IF NOT EXISTS HomefirstOne;"
+          mysql -uroot -e "CREATE DATABASE IF NOT EXISTS HomefirstOne;"
 
       # Step 5: Build with Gradle
       - name: Build with Gradle
