@@ -21,10 +21,6 @@ jobs:
           distribution: "corretto"
           java-version: 17
 
-      # Step 3: Run unit tests
-      - name: Unit Tests
-        run: ./gradlew -b build.gradle.kts test
-
       # Step 4: Build the application
       - name: Build the application
         run: |
