@@ -19,7 +19,6 @@ import com.homefirstindia.hfo.utils.LoggerUtils.log
 import org.apache.commons.codec.binary.Base64
 import org.apache.commons.io.FilenameUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.io.ByteArrayInputStream
@@ -82,16 +81,18 @@ class AmazonClient(
 
             return true
         } catch (e: AmazonServiceException) {
-            // The call was transmitted successfully, but Amazon S3 couldn't process
-            // it, so it returned an error response.
+            log("AmazonServiceException while uploading file $fileName: ${e.errorMessage}")
             e.printStackTrace()
         } catch (e: SdkClientException) {
-            // Amazon S3 couldn't be contacted for a response, or the client
-            // couldn't parse the response from Amazon S3.
+            log("SdkClientException while uploading file $fileName: ${e.message}")
+            e.printStackTrace()
+        } catch (e: Exception) {
+            log("Exception while uploading file $fileName: ${e.message}")
             e.printStackTrace()
         }
         return false
     }
+
 
     @Throws(java.lang.Exception::class)
     fun uploadFileToS3(downloadUrl: String, fileName: String): Boolean {
