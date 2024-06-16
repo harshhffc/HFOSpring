@@ -38,7 +38,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          dockerfile: Dockerfile
           push: false
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ github.run_number }}
 
@@ -54,7 +53,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          dockerfile: Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ github.run_number }}
 
@@ -64,7 +62,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY}}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ github.run_number }}
             docker run -d --name hfospring -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ github.run_number }}
