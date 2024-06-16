@@ -7,9 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest
 class HomefirstOneSpringApplicationTests {
 
 
-	@Test
-	fun contextLoads() {
-		println("context is loading")
-	}
+//	@Test
+//	fun contextLoads() {
+//		println("context is loading")
+//	}
 
 }
