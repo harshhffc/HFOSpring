@@ -33,13 +33,21 @@ jobs:
           ./gradlew clean
           ./gradlew --no-daemon build
 
+      # Step 5: Get current date and time in IST
+      - name: Get current date and time in IST
+        id: vars
+        run: |
+          IST_DATE=$(TZ='Asia/Kolkata' date +'%Y%m%d%H%M%S')
+          echo "TAG=$IST_DATE" >> $GITHUB_ENV
+
       # Step 6: Build Docker Image
       - name: Build Docker Image
         uses: docker/build-push-action@v2
         with:
           context: .
+          dockerfile: Dockerfile
           push: false
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ github.run_number }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
 
       # Step 7: Login to Docker Hub
       - name: Login to Docker Hub
@@ -53,8 +61,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
+          dockerfile: Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ github.run_number }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
 
       # Step 9: Deploy to Server
       - name: Deploy to Server
@@ -62,7 +71,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY}}
           script: |
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ github.run_number }}
-            docker run -d --name hfospring -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ github.run_number }}
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
+            docker run -d --name hfospring -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
