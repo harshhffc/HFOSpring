@@ -60,6 +60,7 @@ class AmazonClient(
 
         val awsCredentials: AWSCredentials = BasicAWSCredentials(amazonCreds().username,
             amazonCreds().password)
+
         return AmazonS3ClientBuilder
                 .standard()
                 .withRegion(appProperty.s3BucketRegion)

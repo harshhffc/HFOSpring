@@ -27,6 +27,22 @@ jobs:
           distribution: "corretto"
           java-version: 17
 
+      - name: Configure AWS Credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+
+      - name: Wait for MySQL to be ready
+        run: |
+          sudo apt-get install -y mysql-client
+          until mysql -h 127.0.0.1 -P 3306 -u root -pHffc@123 -e "SELECT 1"; do
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
+
       - name: Build with Gradle
         run: |
           ./gradlew clean build
@@ -45,7 +61,7 @@ jobs:
           context: .
           dockerfile: Dockerfile
           push: false
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/githubcicd:${{ env.TAG }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -59,7 +75,7 @@ jobs:
           context: .
           dockerfile: Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/githubcicd:${{ env.TAG }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@v0.1.6
@@ -68,7 +84,5 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/githubcicd:${{ env.TAG }}
-            docker stop mycontainer || true
-            docker rm mycontainer || true
-            docker run -d --name mycontainer -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/githubcicd:${{ env.TAG }}
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hof:${{ env.TAG }}
+            docker run -d --name mycontainer -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
