@@ -9,7 +9,14 @@ jobs:
   build-deploy:
     name: Build & Deploy Spring Boot App
     runs-on: ubuntu-latest
-
+    services:
+      mysql:
+        image: mysql:8
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: Hffc@123
+          MYSQL_DATABASE: HomefirstOne
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -19,6 +26,22 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
+
+      - name: Configure AWS Credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+
+      - name: Wait for MySQL to be ready
+        run: |
+          sudo apt-get install -y mysql-client
+          until mysql -h 127.0.0.1 -P 3306 -u root -pHffc@123 -e "SELECT 1"; do
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
 
       - name: Build with Gradle
         run: |
