@@ -27,14 +27,6 @@ jobs:
           distribution: "corretto"
           java-version: 17
 
-      - name: Wait for MySQL to be ready
-        run: |
-          sudo apt-get install -y mysql-client
-          until mysql -h 127.0.0.1 -P 3306 -u root -pHffc@123 -e "SELECT 1"; do
-            echo "Waiting for MySQL..."
-            sleep 5
-          done
-
       - name: Build with Gradle
         run: |
           ./gradlew clean build
