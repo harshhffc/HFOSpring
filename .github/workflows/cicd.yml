@@ -21,51 +21,51 @@ jobs:
           distribution: "corretto"
           java-version: 17
 
-      # Step 4: Build the application
+      # Step 3: Build the application
       - name: Build the application
         run: |
           ./gradlew clean
           ./gradlew --no-daemon build
 
-      # Step 5: Get current date and time in IST
+      # Step 4: Get current date and time in IST
       - name: Get current date and time in IST
         id: vars
         run: |
           IST_DATE=$(TZ='Asia/Kolkata' date +'%Y%m%d%H%M%S')
           echo "TAG=$IST_DATE" >> $GITHUB_ENV
 
-      # Step 6: Build Docker Image
+      # Step 5: Build Docker Image
       - name: Build Docker Image
         uses: docker/build-push-action@v2
         with:
           context: .
-          dockerfile: Dockerfile
+          dockerfile: Dockerfile  # Specify if your Dockerfile is not named 'Dockerfile'
           push: false
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/HFOSpring:${{ env.TAG }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
 
-      # Step 7: Login to Docker Hub
+      # Step 6: Login to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # Step 8: Push Docker Image to Docker Hub
+      # Step 7: Push Docker Image to Docker Hub
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
           context: .
-          dockerfile: Dockerfile
+          dockerfile: Dockerfile  # Specify if your Dockerfile is not named 'Dockerfile'
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/HFOSpring:${{ env.TAG }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
 
-      # Step 9: Deploy to Server
+      # Step 8: Deploy to Server
       - name: Deploy to Server
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY}}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/HFOSpring:${{ env.TAG }}
-            docker run -d --name HFOSpring -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/HFOSpring:${{ env.TAG }}
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
+            docker run -d --name hfospring -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
