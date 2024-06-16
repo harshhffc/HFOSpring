@@ -9,6 +9,16 @@ jobs:
   build-deploy:
     name: Build & Deploy Spring Boot App
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: Hffc@123
+          MYSQL_DATABASE: testdb
+
     steps:
       # Step 1: Checkout the repository
       - name: Checkout code
