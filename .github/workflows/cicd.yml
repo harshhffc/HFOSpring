@@ -9,18 +9,12 @@ jobs:
   build-deploy:
     name: Build & Deploy Spring Boot App
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_ROOT_PASSWORD: Hffc@123
-          MYSQL_DATABASE: HomefirstOne
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Setup JDK 17
       - name: Setup JDK 17
         uses: actions/setup-java@v3
         with:
@@ -47,7 +41,7 @@ jobs:
           context: .
           dockerfile: Dockerfile
           push: false
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/HFOSpring:${{ env.TAG }}
 
       # Step 7: Login to Docker Hub
       - name: Login to Docker Hub
@@ -63,7 +57,7 @@ jobs:
           context: .
           dockerfile: Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/HFOSpring:${{ env.TAG }}
 
       # Step 9: Deploy to Server
       - name: Deploy to Server
@@ -73,5 +67,5 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY}}
           script: |
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
-            docker run -d --name hfospring -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/HFOSpring:${{ env.TAG }}
+            docker run -d --name HFOSpring -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/HFOSpring:${{ env.TAG }}
