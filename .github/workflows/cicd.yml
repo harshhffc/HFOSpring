@@ -78,4 +78,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
+            docker stop hfospring || true
+            docker rm hfospring || true
             docker run -d --name hfospring -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
