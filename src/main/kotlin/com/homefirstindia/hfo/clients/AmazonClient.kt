@@ -19,6 +19,7 @@ import com.homefirstindia.hfo.utils.LoggerUtils.log
 import org.apache.commons.codec.binary.Base64
 import org.apache.commons.io.FilenameUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.io.ByteArrayInputStream
@@ -50,95 +51,95 @@ class AmazonClient(
         return _amazonCred!!
     }
 
-//    @Bean
-//    fun s3(): AmazonS3 {
-//
-//        if (amazonCreds().isEncrypted) {
-//            amazonCreds().username = cryptoUtils.decryptAes(amazonCreds().username)
-//            amazonCreds().password = cryptoUtils.decryptAes(amazonCreds().password)
-//        }
-//
-//        val awsCredentials: AWSCredentials = BasicAWSCredentials(amazonCreds().username,
-//            amazonCreds().password)
-//
-//        return AmazonS3ClientBuilder
-//                .standard()
-//                .withRegion(appProperty.s3BucketRegion)
-//                .withCredentials(AWSStaticCredentialsProvider(awsCredentials))
-//                .build()
-//    }
+    @Bean
+    fun s3(): AmazonS3 {
 
-//    @Throws(Exception::class)
-//    fun uploadFile(fileName: String, file: File, bucketPath: EnS3BucketPath): Boolean {
-//        try {
-//            log("==> File saving in S3 with Name: $fileName")
-//
-//            val putObjectRequest = PutObjectRequest(appProperty.s3BucketName,
-//                "${bucketPath.stringValue}/$fileName", file)
-//            s3().putObject(putObjectRequest)
-//
-//            log("==> File saved successfully in S3 with Name: $fileName")
-//
-//            return true
-//        } catch (e: AmazonServiceException) {
-//            // The call was transmitted successfully, but Amazon S3 couldn't process
-//            // it, so it returned an error response.
-//            e.printStackTrace()
-//        } catch (e: SdkClientException) {
-//            // Amazon S3 couldn't be contacted for a response, or the client
-//            // couldn't parse the response from Amazon S3.
-//            e.printStackTrace()
-//        }
-//        return false
-//    }
+        if (amazonCreds().isEncrypted) {
+            amazonCreds().username = cryptoUtils.decryptAes(amazonCreds().username)
+            amazonCreds().password = cryptoUtils.decryptAes(amazonCreds().password)
+        }
 
-//    @Throws(java.lang.Exception::class)
-//    fun uploadFileToS3(downloadUrl: String, fileName: String): Boolean {
-//
-//        if (!downloadUrl.startsWith("https")) {
-//            log("uploadFileToS3 - Invalid download url: $downloadUrl")
-//            return false
-//        }
-//
-//        val filePath: String = appProperty.filePath + fileName
-//
-//        if (downloadFileFromUrl(URL(downloadUrl), filePath)) {
-//            if (uploadFile(fileName, File(filePath), EnS3BucketPath.AUDIO_RECORDING))
-//                File(filePath).delete()
-//            return true
-//        }
-//
-//        return false
-//
-//    }
+        val awsCredentials: AWSCredentials = BasicAWSCredentials(amazonCreds().username,
+            amazonCreds().password)
 
-//    fun getPublicURL(fileName: String, bucketPath: EnS3BucketPath, minutes: Int): String {
-//
-//        var publicUrl: String = NA
-//
-//        try {
-//            val expiration = Date()
-//            var expTimeMillis = expiration.time
-//            expTimeMillis += (1000 * 60 * minutes).toLong()
-//            expiration.setTime(expTimeMillis)
-//            val generatePresignedUrlRequest = GeneratePresignedUrlRequest(
-//                getBucketName(),
-//                bucketPath.stringValue + "/" + fileName
-//            ).withMethod(HttpMethod.GET).withExpiration(expiration)
-//
-//            val url= s3().generatePresignedUrl(generatePresignedUrlRequest)!!
-//            publicUrl = url.toString()
-//        } catch (e: AmazonServiceException) {
-//            // The call was transmitted successfully, but Amazon S3 couldn't process
-//            // it, so it returned an error response.
-//            e.printStackTrace()
-//        } catch (e: SdkClientException) {
-//            // Amazon S3 couldn't be contacted for a response, or the client
-//            // couldn't parse the response from Amazon S3.
-//            e.printStackTrace()
-//        }
-//        return publicUrl
-//    }
+        return AmazonS3ClientBuilder
+                .standard()
+                .withRegion(appProperty.s3BucketRegion)
+                .withCredentials(AWSStaticCredentialsProvider(awsCredentials))
+                .build()
+    }
+
+    @Throws(Exception::class)
+    fun uploadFile(fileName: String, file: File, bucketPath: EnS3BucketPath): Boolean {
+        try {
+            log("==> File saving in S3 with Name: $fileName")
+
+            val putObjectRequest = PutObjectRequest(appProperty.s3BucketName,
+                "${bucketPath.stringValue}/$fileName", file)
+            s3().putObject(putObjectRequest)
+
+            log("==> File saved successfully in S3 with Name: $fileName")
+
+            return true
+        } catch (e: AmazonServiceException) {
+            // The call was transmitted successfully, but Amazon S3 couldn't process
+            // it, so it returned an error response.
+            e.printStackTrace()
+        } catch (e: SdkClientException) {
+            // Amazon S3 couldn't be contacted for a response, or the client
+            // couldn't parse the response from Amazon S3.
+            e.printStackTrace()
+        }
+        return false
+    }
+
+    @Throws(java.lang.Exception::class)
+    fun uploadFileToS3(downloadUrl: String, fileName: String): Boolean {
+
+        if (!downloadUrl.startsWith("https")) {
+            log("uploadFileToS3 - Invalid download url: $downloadUrl")
+            return false
+        }
+
+        val filePath: String = appProperty.filePath + fileName
+
+        if (downloadFileFromUrl(URL(downloadUrl), filePath)) {
+            if (uploadFile(fileName, File(filePath), EnS3BucketPath.AUDIO_RECORDING))
+                File(filePath).delete()
+            return true
+        }
+
+        return false
+
+    }
+
+    fun getPublicURL(fileName: String, bucketPath: EnS3BucketPath, minutes: Int): String {
+
+        var publicUrl: String = NA
+
+        try {
+            val expiration = Date()
+            var expTimeMillis = expiration.time
+            expTimeMillis += (1000 * 60 * minutes).toLong()
+            expiration.setTime(expTimeMillis)
+            val generatePresignedUrlRequest = GeneratePresignedUrlRequest(
+                getBucketName(),
+                bucketPath.stringValue + "/" + fileName
+            ).withMethod(HttpMethod.GET).withExpiration(expiration)
+
+            val url= s3().generatePresignedUrl(generatePresignedUrlRequest)!!
+            publicUrl = url.toString()
+        } catch (e: AmazonServiceException) {
+            // The call was transmitted successfully, but Amazon S3 couldn't process
+            // it, so it returned an error response.
+            e.printStackTrace()
+        } catch (e: SdkClientException) {
+            // Amazon S3 couldn't be contacted for a response, or the client
+            // couldn't parse the response from Amazon S3.
+            e.printStackTrace()
+        }
+        return publicUrl
+    }
 
 
     fun getBucketName(): String {
@@ -170,7 +171,7 @@ class AmazonClient(
 
             request.tagging = ObjectTagging(tags)
 
-//            s3().putObject(request)
+            s3().putObject(request)
 
             log("==> File saved successfully in S3 with Name: $fileName")
 
