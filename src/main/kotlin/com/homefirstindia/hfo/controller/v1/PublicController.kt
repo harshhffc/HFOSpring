@@ -23,6 +23,14 @@ class PublicController(
     private fun log(value: String) = LoggerUtils.log("v1/${this.javaClass.simpleName}.$value")
     private fun logMethod(value: String) = LoggerUtils.logMethodCall("/public/v1/$value")
 
+    @GetMapping(
+        produces = [MediaType.TEXT_HTML_VALUE]
+    )
+    fun sayHello(): String? {
+        return ("<html> " + "<title>" + "HFO Spring" + "</title>" + "<body><h1>"
+                + "Successfully deployed HFO Spring Application" + "</h1></body>" + "</html> ")
+    }
+
     @PostMapping(
         "/PropertyInsight.reportCallback",
         produces = [MediaType.APPLICATION_JSON_VALUE],
