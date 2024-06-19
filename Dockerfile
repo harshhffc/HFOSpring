@@ -1,4 +1,3 @@
-FROM openjdk:17-jdk
 FROM tomcat:9.0
 
 WORKDIR /app
