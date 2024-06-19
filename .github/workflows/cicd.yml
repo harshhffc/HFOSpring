@@ -71,4 +71,4 @@ jobs:
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
             docker stop hfospring || true
             docker rm hfospring || true
-            docker run -d --name hfospring -p 8443:8443 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
+            docker run -d --name hfospring -p 8447:8447 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
