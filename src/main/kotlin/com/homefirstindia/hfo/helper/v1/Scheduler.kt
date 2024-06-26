@@ -22,25 +22,27 @@ class CommunicationScheduler(
     @Async
     fun sendCallLogReport() {
 
-        if (!appProperty.runScheduler)
-            return
+        log("Schedular run at : ${DateTimeUtils.getCurrentDateTimeInIST()}")
 
-        val monthStartDate = "${
-            DateTimeUtils.getLastNMonthFirstDate(
-                DateTimeFormat.yyyy_MM_dd,
-                DateTimeZone.IST, 0
-            )
-        } 00:00:00"
-
-        val currentDate = "${DateTimeUtils.getDateTimeByAddingDays(-1, 
-            DateTimeFormat.yyyy_MM_dd, DateTimeZone.IST)} 23:59:59"
-
-        log("sendCallLogReport - processing data between $monthStartDate to $currentDate")
-
-        communicationBackgroundProcessHelper.callLogExport(
-            monthStartDate, currentDate,
-            SalesforceObjectType.COLLECTION.value
-        )
+//        if (!appProperty.runScheduler)
+//            return
+//
+//        val monthStartDate = "${
+//            DateTimeUtils.getLastNMonthFirstDate(
+//                DateTimeFormat.yyyy_MM_dd,
+//                DateTimeZone.IST, 0
+//            )
+//        } 00:00:00"
+//
+//        val currentDate = "${DateTimeUtils.getDateTimeByAddingDays(-1,
+//            DateTimeFormat.yyyy_MM_dd, DateTimeZone.IST)} 23:59:59"
+//
+//        log("sendCallLogReport - processing data between $monthStartDate to $currentDate")
+//
+//        communicationBackgroundProcessHelper.callLogExport(
+//            monthStartDate, currentDate,
+//            SalesforceObjectType.COLLECTION.value
+//        )
 
     }
 
