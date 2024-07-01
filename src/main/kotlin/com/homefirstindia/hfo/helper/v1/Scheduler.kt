@@ -18,9 +18,11 @@ class CommunicationScheduler(
     private fun log(value: String) = LoggerUtils.log("${this.javaClass.simpleName}.$value")
 
 //    @Scheduled(initialDelay = 1000, fixedDelay = Long.MAX_VALUE) //TODO: Comment for production
-    @Scheduled(cron = "0 0 9 * * *", zone = "IST")  //TODO: Uncomment for production
+    @Scheduled(cron = "0 0 15:20 * * *", zone = "IST")  //TODO: Uncomment for production
     @Async
     fun sendCallLogReport() {
+
+        println("schedular run at : ${DateTimeUtils.getCurrentDateTimeInIST()}")
 
         log("Schedular run at : ${DateTimeUtils.getCurrentDateTimeInIST()}")
 

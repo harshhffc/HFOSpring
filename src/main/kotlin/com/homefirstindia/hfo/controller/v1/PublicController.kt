@@ -2,6 +2,7 @@ package com.homefirstindia.hfo.controller.v1
 
 import com.homefirstindia.hfo.model.v1.CallLog
 import com.homefirstindia.hfo.model.v1.SMSLog
+import com.homefirstindia.hfo.networking.v1.CommonNetworkingClient
 import com.homefirstindia.hfo.service.v1.CommunicationService
 import com.homefirstindia.hfo.service.v1.PublicService
 import com.homefirstindia.hfo.utils.*
@@ -18,6 +19,7 @@ class PublicController(
     @Autowired val oneResponse: OneResponse,
     @Autowired val publicService: PublicService,
     @Autowired val communicationService: CommunicationService,
+    @Autowired val commonNetworkingClient: CommonNetworkingClient
 ) {
 
     private fun log(value: String) = LoggerUtils.log("v1/${this.javaClass.simpleName}.$value")
@@ -27,6 +29,7 @@ class PublicController(
         produces = [MediaType.TEXT_HTML_VALUE]
     )
     fun sayHello(): String? {
+
         return ("<html> " + "<title>" + "HFO Spring" + "</title>" + "<body><h1>"
                 + "Successfully deployed HFO Spring Application" + "</h1></body>" + "</html> ")
     }
