@@ -151,7 +151,7 @@ class WhitelistedIP {
 }
 
 @Entity
-@Table(name = "`Creds`")
+@Table(name = "`creds`")
 class Creds {
 
     @Id

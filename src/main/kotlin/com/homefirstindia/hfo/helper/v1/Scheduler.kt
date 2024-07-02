@@ -17,8 +17,8 @@ class CommunicationScheduler(
 
     private fun log(value: String) = LoggerUtils.log("${this.javaClass.simpleName}.$value")
 
-//    @Scheduled(initialDelay = 1000, fixedDelay = Long.MAX_VALUE) //TODO: Comment for production
-    @Scheduled(cron = "0 15 16 * * *", zone = "IST")  //TODO: Uncomment for production
+    @Scheduled(cron = "0 15 13 * * *", zone = "IST") //TODO: Comment for production
+//    @Scheduled(cron = "0 20 16 * * *", zone = "IST")  //TODO: Uncomment for production
     @Async
     fun sendCallLogReport() {
 
