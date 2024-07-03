@@ -11,13 +11,12 @@ import org.springframework.stereotype.Component
 @EnableAsync
 @Component
 class CommunicationScheduler(
-    @Autowired val appProperty: AppProperty,
-    @Autowired val communicationBackgroundProcessHelper: CommunicationBackgroundProcessHelper
+    @Autowired val appProperty: AppProperty
 ) {
 
     private fun log(value: String) = LoggerUtils.log("${this.javaClass.simpleName}.$value")
 
-    @Scheduled(cron = "0 18 13 * * *", zone = "IST") //TODO: Comment for production
+    @Scheduled(cron = "0 15 18 * * *", zone = "IST") //TODO: Comment for production
 //    @Scheduled(cron = "0 20 16 * * *", zone = "IST")  //TODO: Uncomment for production
     @Async
     fun sendCallLogReport() {
