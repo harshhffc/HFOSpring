@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
-@EnableAsync
 @Component
 class CommunicationScheduler(
     @Autowired val appProperty: AppProperty
