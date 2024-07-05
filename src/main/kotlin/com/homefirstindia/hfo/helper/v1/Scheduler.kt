@@ -4,9 +4,11 @@ import com.homefirstindia.hfo.security.AppProperty
 import com.homefirstindia.hfo.utils.DateTimeUtils
 import com.homefirstindia.hfo.utils.LoggerUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
+@EnableAsync
 @Component
 class CommunicationScheduler(
     @Autowired val appProperty: AppProperty
