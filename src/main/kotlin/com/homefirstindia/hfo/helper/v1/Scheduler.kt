@@ -1,14 +1,12 @@
 package com.homefirstindia.hfo.helper.v1
 
 import com.homefirstindia.hfo.security.AppProperty
-import com.homefirstindia.hfo.utils.*
+import com.homefirstindia.hfo.utils.DateTimeUtils
+import com.homefirstindia.hfo.utils.LoggerUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.scheduling.annotation.Async
-import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
-@EnableAsync
 @Component
 class CommunicationScheduler(
     @Autowired val appProperty: AppProperty
@@ -17,32 +15,11 @@ class CommunicationScheduler(
     private fun log(value: String) = LoggerUtils.log("Scheduler.$value")
 
 //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
-    @Scheduled(cron = "0 45 12 * * *", zone = "Asia/Kolkata")  //TODO: Uncomment for production
-    @Async
+    @Scheduled(cron = "0 05 13 * * *", zone = "Asia/Kolkata")  //TODO: Uncomment for production
     fun sendCallLogReport() {
 
         log("sendCallLogReport: process started")
         log("Schedular run at : ${DateTimeUtils.getCurrentDateTimeInIST()}")
-
-//        if (!appProperty.runScheduler)
-//            return
-//
-//        val monthStartDate = "${
-//            DateTimeUtils.getLastNMonthFirstDate(
-//                DateTimeFormat.yyyy_MM_dd,
-//                DateTimeZone.IST, 0
-//            )
-//        } 00:00:00"
-//
-//        val currentDate = "${DateTimeUtils.getDateTimeByAddingDays(-1,
-//            DateTimeFormat.yyyy_MM_dd, DateTimeZone.IST)} 23:59:59"
-//
-//        log("sendCallLogReport - processing data between $monthStartDate to $currentDate")
-//
-//        communicationBackgroundProcessHelper.callLogExport(
-//            monthStartDate, currentDate,
-//            SalesforceObjectType.COLLECTION.value
-//        )
 
     }
 
