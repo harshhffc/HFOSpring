@@ -14,15 +14,14 @@ class CommunicationScheduler(
     @Autowired val appProperty: AppProperty
 ) {
 
-    private fun log(value: String) = LoggerUtils.log("${this.javaClass.simpleName}.$value")
+    private fun log(value: String) = LoggerUtils.log("Scheduler.$value")
 
-    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
-//    @Scheduled(cron = "0 20 16 * * *", zone = "IST")  //TODO: Uncomment for production
+//    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
+    @Scheduled(cron = "0 45 12 * * *", zone = "Asia/Kolkata")  //TODO: Uncomment for production
     @Async
     fun sendCallLogReport() {
 
-        println("Schedular run at : ${DateTimeUtils.getCurrentDateTimeInIST()}")
-
+        log("sendCallLogReport: process started")
         log("Schedular run at : ${DateTimeUtils.getCurrentDateTimeInIST()}")
 
 //        if (!appProperty.runScheduler)
