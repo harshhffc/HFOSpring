@@ -15,19 +15,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Configure AWS CLI
-      - name: Configure AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      # Step 3: Enable SSH access
-      - name: Enable SSH Access
-        run: |
-          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr 0.0.0.0/0
-
       # Step 4: Get current date and time in IST
       - name: Get current date and time in IST
         id: vars
@@ -72,8 +59,3 @@ jobs:
             docker stop hfospring || true
             docker rm hfospring || true
             docker run -d --name hfospring -p 8447:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
-
-      # Step 9: Revoke SSH access
-      - name: Revoke SSH Access
-        run: |
-          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr 0.0.0.0/0
