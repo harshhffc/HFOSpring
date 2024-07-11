@@ -34,7 +34,7 @@ class PublicController(
         println("log printed through println")
 
         return ("<html> " + "<title>" + "HFO Spring" + "</title>" + "<body><h1>"
-                + "Successfully deployed HFO Spring Application with anuj and rohit" + "</h1></body>" + "</html> ")
+                + "Successfully deployed HFO Spring Application with anuj rohit and other guys" + "</h1></body>" + "</html> ")
     }
 
     @PostMapping(
