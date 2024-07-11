@@ -18,7 +18,8 @@ class CommunicationScheduler(
     private fun log(value: String) = LoggerUtils.log("Scheduler.$value")
 
 //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
-    @Scheduled(cron = "0 36 18 * * *", zone = "IST")  //TODO: Uncomment for production
+//    @Scheduled(cron = "0 10 19 * * *", zone = "IST")  //TODO: Uncomment for production
+    @Scheduled(cron= "0/10 * * ? * *")
     fun sendCallLogReport() {
 
         println("add value=========${add()}")
