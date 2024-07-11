@@ -128,7 +128,7 @@ class PublicService(
         }
 
         val attachment = documentRepositoryMaster.attachmentRepository.findAttachmentByFid(fid) ?: run {
-            log("fetchDocument - No attachment found for fid: $fid")
+            log("fetchDocument - No attachment found for fid testing with anuj: $fid")
             return OneResponse().resourceNotFound("No attachment found")
         }
 
