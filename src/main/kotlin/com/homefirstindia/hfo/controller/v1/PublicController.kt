@@ -30,6 +30,8 @@ class PublicController(
     )
     fun sayHello(): String? {
 
+        log("log printed")
+
         return ("<html> " + "<title>" + "HFO Spring" + "</title>" + "<body><h1>"
                 + "Successfully deployed HFO Spring Application" + "</h1></body>" + "</html> ")
     }
