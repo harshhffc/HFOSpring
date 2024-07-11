@@ -18,12 +18,19 @@ class CommunicationScheduler(
     private fun log(value: String) = LoggerUtils.log("Scheduler.$value")
 
 //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
-    @Scheduled(cron = "0 57 17 * * *", zone = "IST")  //TODO: Uncomment for production
+    @Scheduled(cron = "0 36 18 * * *", zone = "IST")  //TODO: Uncomment for production
     fun sendCallLogReport() {
+
+        println("add value=========${add()}")
 
         log("sendCallLogReport: process started")
         log("Schedular run at : ${DateTimeUtils.getCurrentDateTimeInIST()}")
 
+    }
+
+
+    fun add(): Int {
+        return 1+1
     }
 
 }
