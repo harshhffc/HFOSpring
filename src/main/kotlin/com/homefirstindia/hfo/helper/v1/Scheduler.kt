@@ -18,7 +18,7 @@ class CommunicationScheduler(
     private fun log(value: String) = LoggerUtils.log("Scheduler.$value")
 
 //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
-    @Scheduled(cron = "0 30 16 * * *", zone = "Asia/Kolkata")  //TODO: Uncomment for production
+    @Scheduled(cron = "0 40 16 * * *", zone = "Asia/Kolkata")  //TODO: Uncomment for production
     fun sendCallLogReport() {
 
         log("sendCallLogReport: process started")
