@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import org.springframework.scheduling.annotation.EnableScheduling
 
 
 @EnableAsync
@@ -23,16 +22,9 @@ class CommunicationScheduler(
     @Scheduled(cron= "0/10 * * ? * *")
     fun sendCallLogReport() {
 
-        println("add value=========${add()}")
-
         log("sendCallLogReport: process started")
         log("Schedular run at : ${DateTimeUtils.getCurrentDateTimeInIST()}")
 
-    }
-
-
-    fun add(): Int {
-        return 1+1
     }
 
 }

@@ -34,7 +34,7 @@ class PublicController(
         println("log printed through println")
 
         return ("<html> " + "<title>" + "HFO Spring" + "</title>" + "<body><h1>"
-                + "Successfully deployed HFO Spring Application with anuj rohit and other guys" + "</h1></body>" + "</html> ")
+                + "Successfully deployed HFO Spring Application" + "</h1></body>" + "</html> ")
     }
 
     @PostMapping(
@@ -67,9 +67,12 @@ class PublicController(
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun comSMSDisposition(
-        @RequestParam status: String, @RequestParam sid: String,
-        @RequestParam custom: String, @RequestParam custom1: String,
-        @RequestParam(required = false) senttime: String, @RequestParam(required = false) delivered: String,
+        @RequestParam status: String,
+        @RequestParam sid: String,
+        @RequestParam custom: String,
+        @RequestParam custom1: String,
+        @RequestParam(required = false) senttime: String,
+        @RequestParam(required = false) delivered: String,
         @RequestParam mobile: String,
     ): ResponseEntity<String>? {
 
