@@ -23,7 +23,7 @@ class CommunicationScheduler(
 
     //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
 //    @Scheduled(cron = "0 50 11 * * *", zone = "IST")  //TODO: Uncomment for production
-    @Scheduled(cron = "0 19 17 * * *", zone = "IST")  // TODO: Uncomment for production
+    @Scheduled(cron = "0 28 17 * * *", zone = "IST")  // TODO: Uncomment for production
     @Async
     fun backUpLogs() {
 
@@ -36,7 +36,7 @@ class CommunicationScheduler(
             val logsDirPath = "/usr/local/tomcat/logs"
 
             // List log files inside the container
-            val listProcess = Runtime.getRuntime().exec("docker exec $containerName ls $logsDirPath")
+            val listProcess = Runtime.getRuntime().exec("/usr/bin/docker exec $containerName ls $logsDirPath")
             val logFiles = listProcess.inputStream.bufferedReader().readLines()
 
             var totalProcessingLogs = 0
