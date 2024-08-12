@@ -23,7 +23,7 @@ class CommunicationScheduler(
 
     //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
 //    @Scheduled(cron = "0 50 11 * * *", zone = "IST")  //TODO: Uncomment for production
-    @Scheduled(cron = "0 28 17 * * *", zone = "IST")  // TODO: Uncomment for production
+    @Scheduled(cron = "0 39 17 * * *", zone = "IST")  // TODO: Uncomment for production
     @Async
     fun backUpLogs() {
 
@@ -32,12 +32,14 @@ class CommunicationScheduler(
         try {
             log("backUpLogs - process to move log files to S3")
 
-            val containerName = "hfo"  // Replace with your actual container name
+            val dockerPath = "/usr/bin/docker"  // Adjust this if Docker is located elsewhere
+            val containerName = "hfo"
             val logsDirPath = "/usr/local/tomcat/logs"
 
             // List log files inside the container
-            val listProcess = Runtime.getRuntime().exec("/usr/bin/docker exec $containerName ls $logsDirPath")
+            val listProcess = ProcessBuilder(dockerPath, "exec", containerName, "ls", logsDirPath).start()
             val logFiles = listProcess.inputStream.bufferedReader().readLines()
+            listProcess.waitFor()
 
             var totalProcessingLogs = 0
             var totalProcessedLogs = 0
@@ -47,8 +49,9 @@ class CommunicationScheduler(
                     totalProcessingLogs++
 
                     // Read the log file from the container
-                    val readProcess = Runtime.getRuntime().exec("docker exec $containerName cat $logsDirPath/$fileName")
+                    val readProcess = ProcessBuilder(dockerPath, "exec", containerName, "cat", "$logsDirPath/$fileName").start()
                     val logContent = readProcess.inputStream.bufferedReader().readText()
+                    readProcess.waitFor()
 
                     // Create a temporary file to write the log content to
                     val tempFile = File.createTempFile(fileName, null)
@@ -74,8 +77,8 @@ class CommunicationScheduler(
 
         } catch (e: Exception) {
             log("backUpLogs - Error in backing logs: ${e.message}")
+            e.printStackTrace()
         }
     }
-
 
 }
