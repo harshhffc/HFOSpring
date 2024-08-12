@@ -23,7 +23,65 @@ class CommunicationScheduler(
 
     //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
 //    @Scheduled(cron = "0 50 11 * * *", zone = "IST")  //TODO: Uncomment for production
-    @Scheduled(cron = "0 39 17 * * *", zone = "IST")  // TODO: Uncomment for production
+//    @Scheduled(cron = "0 39 17 * * *", zone = "IST")  // TODO: Uncomment for production
+//    @Async
+//    fun backUpLogs() {
+//
+//        log("backup logs scheduler started")
+//
+//        try {
+//            log("backUpLogs - process to move log files to S3")
+//
+//            val dockerPath = "/usr/bin/docker"  // Adjust this if Docker is located elsewhere
+//            val containerName = "hfo"
+//            val logsDirPath = "/usr/local/tomcat/logs"
+//
+//            // List log files inside the container
+//            val listProcess = ProcessBuilder(dockerPath, "exec", containerName, "ls", logsDirPath).start()
+//            val logFiles = listProcess.inputStream.bufferedReader().readLines()
+//            listProcess.waitFor()
+//
+//            var totalProcessingLogs = 0
+//            var totalProcessedLogs = 0
+//
+//            for (fileName in logFiles) {
+//                if (fileName.endsWith(".log") || fileName.endsWith(".txt")) {
+//                    totalProcessingLogs++
+//
+//                    // Read the log file from the container
+//                    val readProcess = ProcessBuilder(dockerPath, "exec", containerName, "cat", "$logsDirPath/$fileName").start()
+//                    val logContent = readProcess.inputStream.bufferedReader().readText()
+//                    readProcess.waitFor()
+//
+//                    // Create a temporary file to write the log content to
+//                    val tempFile = File.createTempFile(fileName, null)
+//                    tempFile.writeText(logContent)
+//
+//                    if (amazonClient.uploadFile(
+//                            fileName, tempFile,
+//                            appProperty.s3BucketName,
+//                            if (appProperty.runScheduler) EnS3BucketPath.LOGS_SERVER1 else EnS3BucketPath.LOGS_SERVER2
+//                        )
+//                    ) {
+//                        totalProcessedLogs++
+//                    }
+//
+//                    tempFile.delete()
+//                }
+//            }
+//
+//            log(
+//                "backUpLogs - back up completed | total log: ${logFiles.size} " +
+//                        "| total processing log: $totalProcessingLogs | total processed log: $totalProcessedLogs"
+//            )
+//
+//        } catch (e: Exception) {
+//            log("backUpLogs - Error in backing logs: ${e.message}")
+//            e.printStackTrace()
+//        }
+//    }
+
+    @Scheduled(cron = "0 53 17 * * *", zone = "IST")  // TODO: Uncomment for production
     @Async
     fun backUpLogs() {
 
@@ -32,46 +90,48 @@ class CommunicationScheduler(
         try {
             log("backUpLogs - process to move log files to S3")
 
-            val dockerPath = "/usr/bin/docker"  // Adjust this if Docker is located elsewhere
-            val containerName = "hfo"
-            val logsDirPath = "/usr/local/tomcat/logs"
+            val containerName = "hfo"  // Replace with your actual container name
+            val logsDirPathInContainer = "/usr/local/tomcat/logs"
+            val hostTempDir = "/tmp/tomcat-logs"  // Temporary directory on the host
 
-            // List log files inside the container
-            val listProcess = ProcessBuilder(dockerPath, "exec", containerName, "ls", logsDirPath).start()
-            val logFiles = listProcess.inputStream.bufferedReader().readLines()
-            listProcess.waitFor()
+            // Create the temporary directory if it doesn't exist
+            val tempDir = File(hostTempDir)
+            if (!tempDir.exists()) {
+                tempDir.mkdirs()
+            }
 
+            // Copy logs from the Docker container to the host's temporary directory
+            val copyCommand = "docker cp $containerName:$logsDirPathInContainer $hostTempDir"
+            val process = Runtime.getRuntime().exec(copyCommand)
+            process.waitFor()  // Wait for the copy command to complete
+
+            val logsDir = File(hostTempDir)
+
+            val totalLogs = logsDir.listFiles()?.size ?: 0
             var totalProcessingLogs = 0
             var totalProcessedLogs = 0
 
-            for (fileName in logFiles) {
-                if (fileName.endsWith(".log") || fileName.endsWith(".txt")) {
+            logsDir.listFiles()?.forEach { logFile ->
+                if (logFile.name.endsWith(".log") || logFile.name.endsWith(".txt")) {
                     totalProcessingLogs++
 
-                    // Read the log file from the container
-                    val readProcess = ProcessBuilder(dockerPath, "exec", containerName, "cat", "$logsDirPath/$fileName").start()
-                    val logContent = readProcess.inputStream.bufferedReader().readText()
-                    readProcess.waitFor()
-
-                    // Create a temporary file to write the log content to
-                    val tempFile = File.createTempFile(fileName, null)
-                    tempFile.writeText(logContent)
+                    val fileName = logFile.name
 
                     if (amazonClient.uploadFile(
-                            fileName, tempFile,
+                            fileName, logFile,
                             appProperty.s3BucketName,
-                            if (appProperty.runScheduler) EnS3BucketPath.LOGS_SERVER1 else EnS3BucketPath.LOGS_SERVER2
+                            EnS3BucketPath.LOGS_SERVER1
                         )
                     ) {
                         totalProcessedLogs++
                     }
 
-                    tempFile.delete()
+                    logFile.delete()  // Delete the file after processing
                 }
             }
 
             log(
-                "backUpLogs - back up completed | total log: ${logFiles.size} " +
+                "backUpLogs - back up completed | total log: $totalLogs " +
                         "| total processing log: $totalProcessingLogs | total processed log: $totalProcessedLogs"
             )
 
@@ -80,5 +140,6 @@ class CommunicationScheduler(
             e.printStackTrace()
         }
     }
+
 
 }
