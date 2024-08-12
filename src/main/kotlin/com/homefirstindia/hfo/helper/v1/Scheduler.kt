@@ -81,7 +81,7 @@ class CommunicationScheduler(
 //        }
 //    }
 
-    @Scheduled(cron = "0 53 17 * * *", zone = "IST")  // TODO: Uncomment for production
+    @Scheduled(cron = "0 14 18 * * *", zone = "IST")  // TODO: Uncomment for production
     @Async
     fun backUpLogs() {
 
