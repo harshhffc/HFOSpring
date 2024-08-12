@@ -81,18 +81,19 @@ class CommunicationScheduler(
 //        }
 //    }
 
-    @Scheduled(cron = "0 14 18 * * *", zone = "IST")  // TODO: Uncomment for production
+    @Scheduled(cron = "0 25 18 * * *", zone = "IST")  // TODO: Uncomment for production
     @Async
     fun backUpLogs() {
 
         log("backup logs scheduler started")
 
         try {
-            log("backUpLogs - process to move log files to S3")
+            log("Starting Docker command execution")
 
-            val containerName = "hfo"  // Replace with your actual container name
+            val dockerPath = "/usr/bin/docker"
+            val containerName = "hfo"
             val logsDirPathInContainer = "/usr/local/tomcat/logs"
-            val hostTempDir = "/tmp/tomcat-logs"  // Temporary directory on the host
+            val hostTempDir = "/tmp/tomcat-logs"
 
             // Create the temporary directory if it doesn't exist
             val tempDir = File(hostTempDir)
@@ -100,13 +101,25 @@ class CommunicationScheduler(
                 tempDir.mkdirs()
             }
 
-            // Copy logs from the Docker container to the host's temporary directory
-            val copyCommand = "docker cp $containerName:$logsDirPathInContainer $hostTempDir"
-            val process = Runtime.getRuntime().exec(copyCommand)
-            process.waitFor()  // Wait for the copy command to complete
+            // Build and start the process
+            val processBuilder = ProcessBuilder(dockerPath, "cp", "$containerName:$logsDirPathInContainer", hostTempDir)
+            processBuilder.redirectErrorStream(true)  // Combine stdout and stderr
+            val process = processBuilder.start()
 
-            val logsDir = File(hostTempDir)
+            // Capture and log process output
+            val output = process.inputStream.bufferedReader().readText()
+            val exitCode = process.waitFor()
 
+            log("Docker command output: $output")
+            log("Docker command exit code: $exitCode")
+
+            if (exitCode != 0) {
+                log("Error while executing docker cp command: $output")
+                return
+            }
+
+            // Proceed with file operations
+            val logsDir = File(hostTempDir, "logs")
             val totalLogs = logsDir.listFiles()?.size ?: 0
             var totalProcessingLogs = 0
             var totalProcessedLogs = 0
@@ -126,7 +139,7 @@ class CommunicationScheduler(
                         totalProcessedLogs++
                     }
 
-                    logFile.delete()  // Delete the file after processing
+                    logFile.delete()
                 }
             }
 
@@ -139,6 +152,7 @@ class CommunicationScheduler(
             log("backUpLogs - Error in backing logs: ${e.message}")
             e.printStackTrace()
         }
+
     }
 
 
