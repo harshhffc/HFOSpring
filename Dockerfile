@@ -5,4 +5,6 @@ COPY build/libs/HomefirstOneSpring-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/
 
 EXPOSE 8080
 
+RUN mkdir -p /var/www/images/document_picture/
+
 CMD ["catalina.sh", "run"]

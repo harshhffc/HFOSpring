@@ -93,6 +93,29 @@ class AmazonClient(
         return false
     }
 
+    @Throws(Exception::class)
+    fun uploadFile(fileName: String, file: File, bucketName: String, bucketPath: EnS3BucketPath): Boolean {
+        try {
+            log("==> File saving in S3 with Name: $fileName")
+
+            val putObjectRequest = PutObjectRequest(bucketName, "${bucketPath.stringValue}/$fileName", file)
+            s3().putObject(putObjectRequest)
+
+            log("==> File saved successfully in S3 with Name: $fileName")
+
+            return true
+        } catch (e: AmazonServiceException) {
+            // The call was transmitted successfully, but Amazon S3 couldn't process
+            // it, so it returned an error response.
+            e.printStackTrace()
+        } catch (e: SdkClientException) {
+            // Amazon S3 couldn't be contacted for a response, or the client
+            // couldn't parse the response from Amazon S3.
+            e.printStackTrace()
+        }
+        return false
+    }
+
 
     @Throws(java.lang.Exception::class)
     fun uploadFileToS3(downloadUrl: String, fileName: String): Boolean {
@@ -219,5 +242,7 @@ enum class EnS3BucketPath(val stringValue: String) {
     BANNER("external/promotion/banner"),
     AMORT_CALCULATION("HomefirstOne/Extras/Amort"),
     LMS_EXPORT("HomefirstOne/LMS/Exports"),
-    PROPERTY_IMAGES("HomefirstOne/Property/PropertyPhotograph")
+    PROPERTY_IMAGES("HomefirstOne/Property/PropertyPhotograph"),
+    LOGS_SERVER1("HFO/Server1"),
+    LOGS_SERVER2("HFO/Server2")
 }
