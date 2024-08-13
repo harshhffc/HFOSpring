@@ -19,7 +19,7 @@ class CommunicationScheduler(
     @Autowired val amazonClient: AmazonClient
 ) {
 
-    private fun log(value: String) = LoggerUtils.log("Scheduler.$value")
+//    private fun log(value: String) = LoggerUtils.log("Scheduler.$value")
 
     //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
 //    @Scheduled(cron = "0 50 11 * * *", zone = "IST")  //TODO: Uncomment for production
