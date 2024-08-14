@@ -155,32 +155,34 @@ class CommunicationScheduler(
 //
 //    }
 
-    @Scheduled(cron = "0 42 14 * * *", zone = "IST")  // TODO: Uncomment for production
+    @Scheduled(cron = "0 50 14 * * *", zone = "IST")  // TODO: Uncomment for production
     @Async
     fun backUpLogs() {
         try {
             log("backUpLogs - process to move log files to S3")
 
             // Define the path where logs will be copied
-            val hostLogsDir = File("/tmp/container-logs")
-            if (!hostLogsDir.exists()) {
-                hostLogsDir.mkdirs()
-            }
+//            val hostLogsDir = File("/tmp/container-logs")
+//            if (!hostLogsDir.exists()) {
+//                hostLogsDir.mkdirs()
+//            }
+//
+//            // Copy logs from Docker container to host
+//            val containerLogsPath = "/usr/local/tomcat/logs"
+//            val containerName = "hfo"
+//            val copyCommand = "/usr/bin/docker cp $containerName:$containerLogsPath ${hostLogsDir.absolutePath}"
+//
+//            val process = Runtime.getRuntime().exec(copyCommand)
+//            process.waitFor()
+//
+//            if (process.exitValue() != 0) {
+//                throw IOException("Failed to copy logs from container: ${process.errorStream.reader().readText()}")
+//            }
 
-            // Copy logs from Docker container to host
-            val containerLogsPath = "/usr/local/tomcat/logs"
-            val containerName = "hfo"
-            val copyCommand = "/usr/bin/docker cp $containerName:$containerLogsPath ${hostLogsDir.absolutePath}"
-
-            val process = Runtime.getRuntime().exec(copyCommand)
-            process.waitFor()
-
-            if (process.exitValue() != 0) {
-                throw IOException("Failed to copy logs from container: ${process.errorStream.reader().readText()}")
-            }
 
             // Process logs from host directory
-            val logsDir = hostLogsDir
+
+            val logsDir = File("/tmp/container-logs/logs")
             val totalLogs = logsDir.listFiles()?.size ?: 0
             var totalProcessingLogs = 0
             var totalProcessedLogs = 0
