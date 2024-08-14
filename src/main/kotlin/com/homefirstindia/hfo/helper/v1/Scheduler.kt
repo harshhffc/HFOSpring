@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.io.File
+import java.io.IOException
 
 
 @EnableAsync
@@ -154,43 +155,52 @@ class CommunicationScheduler(
 //
 //    }
 
-
-    @Scheduled(cron = "0 50 12 * * *", zone = "IST")  //TODO: Uncomment for production
+    @Scheduled(cron = "0 22 13 * * *", zone = "IST")  // TODO: Uncomment for production
     @Async
     fun backUpLogs() {
-
         try {
-
             log("backUpLogs - process to move log files to S3")
 
-            val logsDir = File("docker exec -it hfo /bin/bash /usr/local/tomcat/logs")
+            // Define the path where logs will be copied
+            val hostLogsDir = File("/tmp/container-logs")
+            if (!hostLogsDir.exists()) {
+                hostLogsDir.mkdirs()
+            }
 
-            val totalLogs = logsDir.listFiles()!!.size
+            // Copy logs from Docker container to host
+            val containerLogsPath = "/usr/local/tomcat/logs"
+            val containerName = "hfo" // Your container name
+            val copyCommand = "docker cp $containerName:$containerLogsPath ${hostLogsDir.absolutePath}"
+
+            val process = Runtime.getRuntime().exec(copyCommand)
+            process.waitFor()
+
+            if (process.exitValue() != 0) {
+                throw IOException("Failed to copy logs from container: ${process.errorStream.reader().readText()}")
+            }
+
+            // Process logs from host directory
+            val logsDir = hostLogsDir
+            val totalLogs = logsDir.listFiles()?.size ?: 0
             var totalProcessingLogs = 0
             var totalProcessedLogs = 0
 
-            for (logFile in logsDir.listFiles()!!) {
-
-                if (logFile.name.endsWith(".log")
-                    || logFile.name.endsWith(".txt")
-                ) {
-
+            for (logFile in logsDir.listFiles() ?: emptyArray()) {
+                if (logFile.name.endsWith(".log") || logFile.name.endsWith(".txt")) {
                     totalProcessingLogs++
 
                     val fileName = logFile.name
-
                     if (amazonClient.uploadFile(
                             fileName, logFile,
                             appProperty.s3BucketName,
                             if (appProperty.runScheduler) EnS3BucketPath.LOGS_SERVER1 else EnS3BucketPath.LOGS_SERVER2
                         )
-                    )
+                    ) {
                         totalProcessedLogs++
+                    }
 
                     logFile.delete()
-
                 }
-
             }
 
             log(
@@ -201,7 +211,6 @@ class CommunicationScheduler(
         } catch (e: Exception) {
             log("backUpLogs - Error in backing logs: ${e.message}")
         }
-
     }
 
 
