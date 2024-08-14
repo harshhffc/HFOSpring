@@ -155,7 +155,7 @@ class CommunicationScheduler(
 //
 //    }
 
-    @Scheduled(cron = "0 09 15 * * *", zone = "IST")  // TODO: Uncomment for production
+    @Scheduled(cron = "0 20 15 * * *", zone = "IST")  // TODO: Uncomment for production
     @Async
     fun backUpLogs() {
         try {
@@ -182,7 +182,7 @@ class CommunicationScheduler(
 
             // Process logs from host directory
 
-            val logsDir = File("/tmp/container-logs/logs")
+            val logsDir = File("/tmp/container-logs","logs")
 
             log("size======${logsDir.listFiles()?.size}")
             log("files======${logsDir.listFiles()}")
