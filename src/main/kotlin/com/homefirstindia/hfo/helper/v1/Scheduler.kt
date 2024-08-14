@@ -169,8 +169,8 @@ class CommunicationScheduler(
 
             // Copy logs from Docker container to host
             val containerLogsPath = "/usr/local/tomcat/logs"
-            val containerName = "hfo" // Your container name
-            val copyCommand = "docker cp $containerName:$containerLogsPath ${hostLogsDir.absolutePath}"
+            val containerName = "hfo"
+            val copyCommand = "/usr/bin/docker cp $containerName:$containerLogsPath ${hostLogsDir.absolutePath}"
 
             val process = Runtime.getRuntime().exec(copyCommand)
             process.waitFor()
