@@ -183,6 +183,10 @@ class CommunicationScheduler(
             // Process logs from host directory
 
             val logsDir = File("/tmp/container-logs/logs")
+
+            log("size======${logsDir.listFiles()?.size}")
+            log("files======${logsDir.listFiles()}")
+
             val totalLogs = logsDir.listFiles()!!.size
             var totalProcessingLogs = 0
             var totalProcessedLogs = 0
@@ -190,6 +194,7 @@ class CommunicationScheduler(
             for (logFile in logsDir.listFiles()!!) {
 
                 log("log file name : ${logFile.name} \n")
+
                 if (logFile.name.endsWith(".log") || logFile.name.endsWith(".txt")) {
                     totalProcessingLogs++
 
