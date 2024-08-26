@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.io.File
-import java.io.IOException
 
 
 @EnableAsync
@@ -24,7 +23,7 @@ class CommunicationScheduler(
 
 //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
 //    @Scheduled(cron = "0 50 11 * * *", zone = "IST")  //TODO: Uncomment for production
-    @Scheduled(cron = "0 20 11 * * *", zone = "IST")  // TODO: Uncomment for production
+    @Scheduled(cron = "0 27 11 * * *", zone = "IST")  // TODO: Uncomment for production
     @Async
     fun backUpLogs() {
 
@@ -38,7 +37,11 @@ class CommunicationScheduler(
             val logsDirPath = "/usr/local/tomcat/logs"
 
             // List log files inside the container
-            val listProcess = ProcessBuilder("docker", "exec", containerName, "ls", logsDirPath).start()
+//            val listProcess = ProcessBuilder("docker", "exec", containerName, "ls", logsDirPath).start()
+
+            val processBuilder = ProcessBuilder("docker", "exec", containerName, "ls", logsDirPath)
+            processBuilder.environment().put("PATH", "/usr/bin:/bin:/usr/sbin:/sbin")
+            val listProcess = processBuilder.start()
             val logFiles = listProcess.inputStream.bufferedReader().readLines()
             listProcess.waitFor()
 
