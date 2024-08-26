@@ -23,7 +23,7 @@ class CommunicationScheduler(
 
 //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
 //    @Scheduled(cron = "0 50 11 * * *", zone = "IST")  //TODO: Uncomment for production
-@Scheduled(cron = "0 35 12 * * *", zone = "IST")  // TODO: Uncomment for production
+@Scheduled(cron = "0 44 12 * * *", zone = "IST")  // TODO: Uncomment for production
 @Async
 fun backUpLogs() {
 
@@ -39,8 +39,19 @@ fun backUpLogs() {
         val listProcessBuilder = ProcessBuilder("/usr/bin/docker", "exec", containerName, "ls", logsDirPath)
         listProcessBuilder.environment()["PATH"] = "/usr/bin:/bin:/usr/sbin:/sbin"
         val listProcess = listProcessBuilder.start()
-        val logFiles = listProcess.inputStream.bufferedReader().readLines()
+
+        // Log output and error streams for debugging
+        val listOutput = listProcess.inputStream.bufferedReader().readText()
+        val listError = listProcess.errorStream.bufferedReader().readText()
         listProcess.waitFor()
+
+        if (listProcess.exitValue() != 0) {
+            log("Error listing log files: $listError")
+            throw RuntimeException("Error listing log files")
+        }
+
+        log("Log files found: $listOutput")
+        val logFiles = listOutput.lines()
 
         var totalProcessingLogs = 0
         var totalProcessedLogs = 0
@@ -54,8 +65,15 @@ fun backUpLogs() {
                 readProcessBuilder.environment()["PATH"] = "/usr/bin:/bin:/usr/sbin:/sbin"
                 val readProcess = readProcessBuilder.start()
 
+                // Log output and error streams for debugging
                 val logContent = readProcess.inputStream.bufferedReader().readText()
+                val readError = readProcess.errorStream.bufferedReader().readText()
                 readProcess.waitFor()
+
+                if (readProcess.exitValue() != 0) {
+                    log("Error reading log file $fileName: $readError")
+                    continue
+                }
 
                 // Create a temporary file to write the log content to
                 val tempFile = File.createTempFile(fileName, null)
@@ -84,6 +102,7 @@ fun backUpLogs() {
         e.printStackTrace()
     }
 }
+
 
 
 //    @Scheduled(cron = "0 32 12 * * *", zone = "IST")
