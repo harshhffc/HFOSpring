@@ -23,86 +23,86 @@ class CommunicationScheduler(
 
 //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
 //    @Scheduled(cron = "0 50 11 * * *", zone = "IST")  //TODO: Uncomment for production
-@Scheduled(cron = "0 25 13 * * *", zone = "IST")  // TODO: Uncomment for production
-@Async
-fun backUpLogs() {
-
-    log("backup logs scheduler started")
-
-    try {
-        log("backUpLogs - process to move log files to S3")
-
-        val dockerPath = "/usr/bin/docker"  // Update this path if Docker is located elsewhere
-        val containerName = "hfo"
-        val logsDirPath = "/usr/local/tomcat/logs"
-
-        // List log files inside the container
-        val listProcessBuilder = ProcessBuilder(dockerPath, "exec", containerName, "ls", logsDirPath)
-        listProcessBuilder.environment()["PATH"] = "/usr/bin:/bin:/usr/sbin:/sbin"
-        listProcessBuilder.redirectErrorStream(true)  // Redirect error stream to output for better logging
-        val listProcess = listProcessBuilder.start()
-
-        val listOutput = listProcess.inputStream.bufferedReader().readText()
-        val listError = listProcess.errorStream.bufferedReader().readText()
-        listProcess.waitFor()
-
-        if (listProcess.exitValue() != 0) {
-            log("Error listing log files: $listError")
-            throw RuntimeException("Error listing log files")
-        }
-
-        log("Log files found: $listOutput")
-        val logFiles = listOutput.lines()
-
-        var totalProcessingLogs = 0
-        var totalProcessedLogs = 0
-
-        for (fileName in logFiles) {
-            if (fileName.endsWith(".log") || fileName.endsWith(".txt")) {
-                totalProcessingLogs++
-
-                // Read the log file from the container
-                val readProcessBuilder = ProcessBuilder(dockerPath, "exec", containerName, "cat", "$logsDirPath/$fileName")
-                readProcessBuilder.environment()["PATH"] = "/usr/bin:/bin:/usr/sbin:/sbin"
-                readProcessBuilder.redirectErrorStream(true)  // Redirect error stream to output for better logging
-                val readProcess = readProcessBuilder.start()
-
-                val logContent = readProcess.inputStream.bufferedReader().readText()
-                val readError = readProcess.errorStream.bufferedReader().readText()
-                readProcess.waitFor()
-
-                if (readProcess.exitValue() != 0) {
-                    log("Error reading log file $fileName: $readError")
-                    continue
-                }
-
-                // Create a temporary file to write the log content to
-                val tempFile = File.createTempFile(fileName, null)
-                tempFile.writeText(logContent)
-
-                if (amazonClient.uploadFile(
-                        fileName, tempFile,
-                        appProperty.s3BucketName,
-                        if (appProperty.runScheduler) EnS3BucketPath.LOGS_SERVER1 else EnS3BucketPath.LOGS_SERVER2
-                    )
-                ) {
-                    totalProcessedLogs++
-                }
-
-                tempFile.delete()
-            }
-        }
-
-        log(
-            "backUpLogs - back up completed | total log: ${logFiles.size} " +
-                    "| total processing log: $totalProcessingLogs | total processed log: $totalProcessedLogs"
-        )
-
-    } catch (e: Exception) {
-        log("backUpLogs - Error in backing logs: ${e.message}")
-        e.printStackTrace()
-    }
-}
+//@Scheduled(cron = "0 25 13 * * *", zone = "IST")  // TODO: Uncomment for production
+//@Async
+//fun backUpLogs() {
+//
+//    log("backup logs scheduler started")
+//
+//    try {
+//        log("backUpLogs - process to move log files to S3")
+//
+//        val dockerPath = "/usr/bin/docker"  // Update this path if Docker is located elsewhere
+//        val containerName = "hfo"
+//        val logsDirPath = "/usr/local/tomcat/logs"
+//
+//        // List log files inside the container
+//        val listProcessBuilder = ProcessBuilder(dockerPath, "exec", containerName, "ls", logsDirPath)
+//        listProcessBuilder.environment()["PATH"] = "/usr/bin:/bin:/usr/sbin:/sbin"
+//        listProcessBuilder.redirectErrorStream(true)  // Redirect error stream to output for better logging
+//        val listProcess = listProcessBuilder.start()
+//
+//        val listOutput = listProcess.inputStream.bufferedReader().readText()
+//        val listError = listProcess.errorStream.bufferedReader().readText()
+//        listProcess.waitFor()
+//
+//        if (listProcess.exitValue() != 0) {
+//            log("Error listing log files: $listError")
+//            throw RuntimeException("Error listing log files")
+//        }
+//
+//        log("Log files found: $listOutput")
+//        val logFiles = listOutput.lines()
+//
+//        var totalProcessingLogs = 0
+//        var totalProcessedLogs = 0
+//
+//        for (fileName in logFiles) {
+//            if (fileName.endsWith(".log") || fileName.endsWith(".txt")) {
+//                totalProcessingLogs++
+//
+//                // Read the log file from the container
+//                val readProcessBuilder = ProcessBuilder(dockerPath, "exec", containerName, "cat", "$logsDirPath/$fileName")
+//                readProcessBuilder.environment()["PATH"] = "/usr/bin:/bin:/usr/sbin:/sbin"
+//                readProcessBuilder.redirectErrorStream(true)  // Redirect error stream to output for better logging
+//                val readProcess = readProcessBuilder.start()
+//
+//                val logContent = readProcess.inputStream.bufferedReader().readText()
+//                val readError = readProcess.errorStream.bufferedReader().readText()
+//                readProcess.waitFor()
+//
+//                if (readProcess.exitValue() != 0) {
+//                    log("Error reading log file $fileName: $readError")
+//                    continue
+//                }
+//
+//                // Create a temporary file to write the log content to
+//                val tempFile = File.createTempFile(fileName, null)
+//                tempFile.writeText(logContent)
+//
+//                if (amazonClient.uploadFile(
+//                        fileName, tempFile,
+//                        appProperty.s3BucketName,
+//                        if (appProperty.runScheduler) EnS3BucketPath.LOGS_SERVER1 else EnS3BucketPath.LOGS_SERVER2
+//                    )
+//                ) {
+//                    totalProcessedLogs++
+//                }
+//
+//                tempFile.delete()
+//            }
+//        }
+//
+//        log(
+//            "backUpLogs - back up completed | total log: ${logFiles.size} " +
+//                    "| total processing log: $totalProcessingLogs | total processed log: $totalProcessedLogs"
+//        )
+//
+//    } catch (e: Exception) {
+//        log("backUpLogs - Error in backing logs: ${e.message}")
+//        e.printStackTrace()
+//    }
+//}
 
 //    @Scheduled(cron = "0 32 12 * * *", zone = "IST")
 //    @Async
@@ -244,5 +244,60 @@ fun backUpLogs() {
 //        }
 //    }
 
+
+    @Scheduled(cron = "0 31 13 * * *", zone = "IST")  //TODO: Uncomment for production
+    @Async
+    fun backUpLogs() {
+
+        try {
+
+            log("backUpLogs - process to move log files to S3")
+
+            val logsDir =  File("/usr/local/tomcat/logs")
+
+            val totalLogs = logsDir.listFiles()!!.size
+            var totalProcessingLogs = 0
+            var totalProcessedLogs = 0
+
+            for (logFile in logsDir.listFiles()!!) {
+
+                if (logFile.name.endsWith(".log")
+                    || logFile.name.endsWith(".txt")) {
+
+                    totalProcessingLogs++
+
+                    getLogFileDate(logFile.name)
+
+                    val fileName = logFile.name
+
+                    if (amazonClient.uploadFile(fileName, logFile,
+                             appProperty.s3BucketName ,
+                             EnS3BucketPath.LOGS_SERVER1)
+                    )
+                        totalProcessedLogs++
+
+                    logFile.delete()
+
+                }
+
+            }
+
+            log("backUpLogs - back up completed | total log: $totalLogs " +
+                    "| total processing log: $totalProcessingLogs | total processed log: $totalProcessedLogs")
+
+        } catch (e: Exception) {
+            log("backUpLogs - Error in backing logs: ${e.message}")
+        }
+
+    }
+
+    private fun getLogFileDate(name: String): String {
+        return name.replace(".log", "")
+            .replace(".txt", "")
+            .replace("catalina.", "")
+            .replace("localhost.", "")
+            .replace("manager.", "")
+            .replace("localhost_access_log.", "")
+    }
 
 }
