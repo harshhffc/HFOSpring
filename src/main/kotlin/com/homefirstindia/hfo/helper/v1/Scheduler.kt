@@ -24,7 +24,7 @@ class CommunicationScheduler(
 
 //    @Scheduled(cron = "0 32 18 * * *", zone = "IST") //TODO: Comment for production
 //    @Scheduled(cron = "0 50 11 * * *", zone = "IST")  //TODO: Uncomment for production
-    @Scheduled(cron = "0 09 11 * * *", zone = "IST")  // TODO: Uncomment for production
+    @Scheduled(cron = "0 20 11 * * *", zone = "IST")  // TODO: Uncomment for production
     @Async
     fun backUpLogs() {
 
@@ -50,7 +50,10 @@ class CommunicationScheduler(
                     totalProcessingLogs++
 
                     // Read the log file from the container
-                    val readProcess = ProcessBuilder("docker", "exec", containerName, "cat", "$logsDirPath/$fileName").start()
+                    val processBuilder = ProcessBuilder("docker", "exec", containerName, "cat", "$logsDirPath/$fileName")
+                    processBuilder.environment().put("PATH", "/usr/bin:/bin:/usr/sbin:/sbin")
+                    val readProcess = processBuilder.start()
+
                     val logContent = readProcess.inputStream.bufferedReader().readText()
                     readProcess.waitFor()
 
