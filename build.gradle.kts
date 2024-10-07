@@ -22,6 +22,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -42,8 +44,6 @@ dependencies {
 	implementation("com.amazonaws:aws-java-sdk-s3:1.12.452")
 	implementation("com.itextpdf:kernel:7.2.3")
 	implementation("com.itextpdf:layout:7.2.3")
-
-	testImplementation("com.h2database:h2") //TODO: check this later
 	implementation("mysql:mysql-connector-java")
 
 
