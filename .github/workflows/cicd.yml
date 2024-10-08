@@ -51,7 +51,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
 
-      # Step 8: Deploy to Server
+      # Step 7: Deploy to Server
       - name: Deploy to Server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -63,3 +63,23 @@ jobs:
             docker stop hfo || true && docker rm hfo || true
             docker run -d --name hfo -p 8449:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/hfo:${{ env.TAG }}
             docker images ${{ secrets.DOCKER_HUB_USERNAME }}/hfo --format "{{.ID}}" | tail -n +3 | xargs -r docker rmi
+
+      # Step 8: Cleanup Old Images on Docker Hub
+      - name: Cleanup Old Images on Docker Hub
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        run: |
+          TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d \
+            '{"username": "'"$DOCKER_HUB_USERNAME"'", "password": "'"$DOCKER_HUB_ACCESS_TOKEN"'"}' \
+            https://hub.docker.com/v2/users/login/ | jq -r .token)
+
+          tags_to_delete=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            "https://hub.docker.com/v2/repositories/$DOCKER_HUB_USERNAME/hfo/tags/?page_size=100" | \
+            jq -r '.results | sort_by(.last_updated) | .[:-2] | .[].name')
+
+          for tag in $tags_to_delete; do
+            curl -s -X DELETE -H "Authorization: Bearer $TOKEN" \
+              "https://hub.docker.com/v2/repositories/$DOCKER_HUB_USERNAME/hfo/tags/$tag/"
+            echo "Deleted tag: $tag"
+          done
